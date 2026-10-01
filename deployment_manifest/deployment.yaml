@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+  namespace: dev
+  labels:
+    app: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+  namespace: "dev"
+  labels:
+    app: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+spec:
+  selector:
+    app: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 1001
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+  namespace: "dev"
+  labels:
+    app: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+  annotations:
+    timestamp: "20250509T115512"
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: "100%"
+      maxUnavailable: "5%"
+    type: "RollingUpdate"
+  minReadySeconds: 0
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+  selector:
+    matchLabels:
+      app: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+  template:
+    metadata:
+      labels:
+        app: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+      annotations:
+        timestamp: "20250509T115512"
+    spec:
+      serviceAccountName: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+        - name: "ot-nexus-regcred"
+      containers:
+        - name: "svc-c1-manifest-git-nohooks-mtb83-qa-qacommunity"
+          image: "registry.buildpiper.in/automation-682046mu117xjpt/dev/devcommunity:${BP_IMAGE_TAG}"
+          imagePullPolicy: "Always"
+          command: null
+          args: null
+          ports:
+            - containerPort: 1001
+              protocol: "TCP"
+              name: "ot"
+          envFrom: null
+          resources:
+            limits:
+              cpu: "100m"
+              memory: "100Mi"
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+          livenessProbe: null
+          readinessProbe: null
+          volumeMounts: null
+      nodeSelector: {}
+      affinity: {}
+      tolerations: []
+      volumes: null
